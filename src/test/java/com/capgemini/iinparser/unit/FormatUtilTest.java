@@ -5,6 +5,7 @@ import com.capgemini.iinparser.util.FormatUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.naming.ConfigurationException;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,7 +15,7 @@ class FormatUtilTest {
     private FormatUtil formatUtil;
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() throws IOException, ConfigurationException {
         formatUtil = new FormatUtil();
     }
 

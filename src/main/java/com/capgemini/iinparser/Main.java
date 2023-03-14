@@ -4,6 +4,7 @@ import com.capgemini.iinparser.domain.exception.PanFormatException;
 import com.capgemini.iinparser.util.FormatUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.naming.ConfigurationException;
 import java.io.IOException;
 
 import static com.capgemini.iinparser.domain.constants.AppConstants.DEFAULT_PAN;
@@ -18,7 +19,7 @@ public class Main {
             FormatUtil formatter = new FormatUtil();
             String formattedPan = formatter.format(pan);
             log.info(formattedPan);
-        } catch (PanFormatException | IOException e) {
+        } catch (PanFormatException | IOException | ConfigurationException e) {
             log.error(e.getMessage(), e);
         }
     }

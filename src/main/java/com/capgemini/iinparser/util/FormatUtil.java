@@ -4,15 +4,23 @@ import com.capgemini.iinparser.domain.exception.PanFormatException;
 import com.capgemini.iinparser.model.IinRange;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.naming.ConfigurationException;
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.capgemini.iinparser.domain.constants.AppConstants.CONFIG_FILE_PATH;
+import static com.capgemini.iinparser.domain.constants.AppConstants.CONFIG_FILE;
+import static com.capgemini.iinparser.domain.constants.AppConstants.END_RANGE_COLUMN_INDEX;
+import static com.capgemini.iinparser.domain.constants.AppConstants.ISSUER_NAME_COLUMN_INDEX;
+import static com.capgemini.iinparser.domain.constants.AppConstants.LENGTH_COLUMN_INDEX;
+import static com.capgemini.iinparser.domain.constants.AppConstants.PREFIX_COLUMN_INDEX;
+import static com.capgemini.iinparser.domain.constants.AppConstants.START_RANGE_COLUMN_INDEX;
+import static com.capgemini.iinparser.domain.constants.AppConstants.TYPE_COLUMN_INDEX;
 
 @Slf4j
 public class FormatUtil {
@@ -20,7 +28,7 @@ public class FormatUtil {
     private final List<IinRange> iinRanges;
     private final IinUtil iinUtil;
 
-    public FormatUtil() throws IOException {
+    public FormatUtil() throws IOException, ConfigurationException {
         this.iinRanges = readConfigFile();
         iinRanges.sort(Collections.reverseOrder());
         iinUtil = new IinUtil();
@@ -34,18 +42,23 @@ public class FormatUtil {
                 .orElseThrow(() -> new PanFormatException("Unsupported PAN format: " + pan));
     }
 
-    private static List<IinRange> readConfigFile() throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(CONFIG_FILE_PATH))) {
+    private static List<IinRange> readConfigFile() throws IOException, ConfigurationException {
+        InputStream inputStream = FormatUtil.class.getClassLoader().getResourceAsStream(CONFIG_FILE);
+        if (inputStream == null) {
+            throw new ConfigurationException("Configuration file not found");
+        }
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             return reader.lines()
                     .map(line -> line.split(","))
-                    .filter(parts -> !parts[0].contains("Issuer Name"))
+                    .filter(parts -> !parts[ISSUER_NAME_COLUMN_INDEX].contains("Issuer Name"))
                     .map(parts -> new IinRange(
-                            parts[0],
-                            Integer.parseInt(parts[1]),
-                            Integer.parseInt(parts[2]),
-                            Integer.parseInt(parts[3]),
-                            Integer.parseInt(parts[4]),
-                            parts[5]
+                            parts[ISSUER_NAME_COLUMN_INDEX],
+                            Integer.parseInt(parts[START_RANGE_COLUMN_INDEX]),
+                            Integer.parseInt(parts[END_RANGE_COLUMN_INDEX]),
+                            Integer.parseInt(parts[LENGTH_COLUMN_INDEX]),
+                            Integer.parseInt(parts[PREFIX_COLUMN_INDEX]),
+                            parts[TYPE_COLUMN_INDEX]
                     ))
                     .collect(Collectors.toList());
         }
