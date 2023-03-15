@@ -27,8 +27,8 @@ To run tests for this application, use the following command:
 
 ## Online Usage
 
-If you don't want to run the application on your own machine, you can use the following link: http://ec2-54-242-142-182.compute-1.amazonaws.com/
+If you don't want to run the application on your own machine, you can use the following link: http://ec2-54-242-142-182.compute-1.amazonaws.com:9090/format?pan=4242424242424242
 
-To send your own PAN, use this pattern: http://ec2-54-242-142-182.compute-1.amazonaws.com/?pan="4242424242424242"
+You can change 4242424242424242 -> your own PAN.
 
 
